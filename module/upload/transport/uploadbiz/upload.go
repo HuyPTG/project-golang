@@ -40,9 +40,9 @@ func (biz *uploadBiz) Upload(ctx context.Context, data []byte, folder, fileName 
 	if strings.TrimSpace(folder) == "" {
 		folder = "img"
 	}
-	fileExt := filepath.Ext(fileName) // => "img.jpg" => ".jpg"
-	fileName := fmt.Sprintf("%d%s",time.Now().Nanosecond(), fileExt) // => 098098098930.jpg ---> take unique
-	img, err := biz.provider.SaveFileUpload(ctx, data, fmt.Sprintf("%s/%s", folder, fileName))
+	fileExt := filepath.Ext(fileName)                                // => "img.jpg" => ".jpg"
+	fileName = fmt.Sprintf("%d%s", time.Now().Nanosecond(), fileExt) // => 098098098930.jpg ---> take unique
+	img, err := biz.provider.SaveFileUploaded(ctx, data, fmt.Sprintf("%s/%s", folder, fileName))
 	if err != nil {
 		return nil, uploadmodel.ErrCannotSaveFile(err)
 	}
