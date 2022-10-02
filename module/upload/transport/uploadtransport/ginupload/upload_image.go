@@ -41,7 +41,7 @@ func UploadImage(appCtx appctx.AppContext) func(c *gin.Context) {
 		biz := uploadbiz.NewUploadBiz(appCtx.UploadProvider(), nil)
 		img, err := biz.Upload(c.Request.Context(), dataBytes, folder, fileHeader.Filename)
 		if err != nil {
-			return err
+			panic(err)
 		}
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(img))
 	}
