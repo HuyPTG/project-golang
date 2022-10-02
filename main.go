@@ -9,6 +9,7 @@ import (
 	"os"
 	"project/common"
 	"project/component/appctx"
+	"project/component/uploadprovider"
 	"project/middleware"
 	"project/module/restaurant/transport/ginrestaurant"
 	"project/module/upload/transport/uploadtransport/ginupload"
@@ -51,6 +52,13 @@ func main() {
 
 	//dsn := "host=localhost user=postgres password=123 dbname=go port=5454 sslmode=disable TimeZone=Asia/Shanghai"
 	dsn := os.Getenv("POSTGRES")
+
+	s3BucketName := os.Getenv("S3BucketName")
+	s3Region := os.Getenv("S3Region")
+	s3APIKey := os.Getenv("S3APIKey")
+	s3SecretKey := os.Getenv("S3SecretKey")
+	s3Domain := os.Getenv("S3Domain")
+	//secretKey := os.Getenv("SYSTEM_SECRET")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -59,7 +67,8 @@ func main() {
 
 	// xem log DB
 	db = db.Debug()
-	appContext := appctx.NewAppContext(db)
+	s3Provider := uploadprovider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
+	appContext := appctx.NewAppContext(db, s3Provider)
 	r := gin.Default()
 	r.Use(middleware.Recover(appContext))
 

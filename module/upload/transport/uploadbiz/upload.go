@@ -24,7 +24,7 @@ type uploadBiz struct {
 	imgStore CreateImageStore
 }
 
-func NewUploadBiz( provider uploadprovider.UploadProvider, imgStore CreateImageStore) *uploadBiz {
+func NewUploadBiz(provider uploadprovider.UploadProvider, imgStore CreateImageStore) *uploadBiz {
 	return &uploadBiz{
 		provider: provider,
 		imgStore: imgStore,
@@ -46,18 +46,19 @@ func (biz *uploadBiz) Upload(ctx context.Context, data []byte, folder, fileName 
 	if err != nil {
 		return nil, uploadmodel.ErrCannotSaveFile(err)
 	}
-	img.Width := w
-	img.Height := h
+	img.Width = w
+	img.Height = h
 	// img.CloudName = "s3" // should be set in provider
-	img.Extension := fileExt
+	img.Extension = fileExt
 	return img, nil
 }
 
 func getImageDimension(reader io.Reader) (int, int, error) {
+	// Cannot get Height and Width
 	img, _, err := image.DecodeConfig(reader)
 	if err != nil {
-		log.Println("err: ",err)
+		log.Println("err: ", err)
 		return 0, 0, err
 	}
-	return img.Height, img.Height, nil
+	return img.Height, img.Width, nil
 }
