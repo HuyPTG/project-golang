@@ -13,6 +13,7 @@ import (
 	"project/middleware"
 	"project/module/restaurant/transport/ginrestaurant"
 	"project/module/upload/transport/uploadtransport/ginupload"
+	"project/module/user/usertransport/ginuser"
 )
 
 type Restaurant struct {
@@ -67,6 +68,7 @@ func main() {
 
 	// xem log DB
 	db = db.Debug()
+
 	s3Provider := uploadprovider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
 	appContext := appctx.NewAppContext(db, s3Provider)
 	r := gin.Default()
@@ -91,6 +93,9 @@ func main() {
 
 	// DELETE /restaurant
 	restaurant.DELETE("/:id", ginrestaurant.DeleteRestaurant(appContext))
+
+	// POST /register
+	v1.POST("/register", ginuser.Register(appContext))
 
 	// GET / restaurant
 	//restaurant.GET("/:id", func(context *gin.Context) {
