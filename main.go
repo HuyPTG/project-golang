@@ -59,7 +59,7 @@ func main() {
 	s3APIKey := os.Getenv("S3APIKey")
 	s3SecretKey := os.Getenv("S3SecretKey")
 	s3Domain := os.Getenv("S3Domain")
-	//secretKey := os.Getenv("SYSTEM_SECRET")
+	secretKey := os.Getenv("SYSTEM_SECRET")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -70,7 +70,7 @@ func main() {
 	db = db.Debug()
 
 	s3Provider := uploadprovider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
-	appContext := appctx.NewAppContext(db, s3Provider)
+	appContext := appctx.NewAppContext(db, s3Provider, secretKey)
 	r := gin.Default()
 	r.Use(middleware.Recover(appContext))
 
@@ -96,6 +96,12 @@ func main() {
 
 	// POST /register
 	v1.POST("/register", ginuser.Register(appContext))
+
+	// POST /authenticate
+	v1.POST("/authenticate", ginuser.Login(appContext))
+
+	// GET/ profile
+	v1.GET("/profile", middleware.RequiredAuth(appContext), ginuser.Profile(appContext))
 
 	// GET / restaurant
 	//restaurant.GET("/:id", func(context *gin.Context) {
